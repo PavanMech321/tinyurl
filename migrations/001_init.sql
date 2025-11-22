@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS links (
   total_clicks INTEGER NOT NULL DEFAULT 0
 );
 
+
 -- Helpful index for search
 CREATE INDEX IF NOT EXISTS idx_links_code ON links (code);
 CREATE INDEX IF NOT EXISTS idx_links_url ON links USING GIN (to_tsvector('simple', url));
