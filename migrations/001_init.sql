@@ -1,7 +1,7 @@
 -- migrations/001_init.sql
 CREATE TABLE IF NOT EXISTS links (
   id SERIAL PRIMARY KEY,
-  code TEXT NOT NULL UNIQUE,
+  code VARCHAR(25) UNIQUE NOT NULL,
   url TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   last_clicked_at TIMESTAMPTZ NULL,
