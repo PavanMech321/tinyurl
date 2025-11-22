@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: tinylink
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: node dist/server.js
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_BASE_URL
+        sync: false

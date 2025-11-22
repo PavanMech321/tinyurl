@@ -1,0 +1,16 @@
+<% layout('layout') -%>
+<% if (!link) { %>
+  <div class="bg-white rounded-lg shadow p-4">
+    <h2 class="text-lg font-semibold mb-2">Not found</h2>
+    <p class="text-sm text-gray-600">This code does not exist.</p>
+  </div>
+<% } else { %>
+  <div class="bg-white rounded-lg shadow p-4 space-y-3">
+    <h2 class="text-lg font-semibold">Stats: <span class="font-mono"><%= link.code %></span></h2>
+    <p class="text-sm"><strong>Target:</strong> <a class="text-blue-700 hover:underline" href="<%= link.url %>"><%= link.url %></a></p>
+    <p class="text-sm"><strong>Total clicks:</strong> <%= link.total_clicks %></p>
+    <p class="text-sm"><strong>Last clicked:</strong> <%= link.last_clicked_at ? new Date(link.last_clicked_at).toLocaleString() : '—' %></p>
+    <p class="text-sm"><strong>Created:</strong> <%= new Date(link.created_at).toLocaleString() %></p>
+    <div class="text-sm text-gray-600">Short URL: <span class="underline"><%= (process.env.APP_BASE_URL || '') %>/<%= link.code %></span></div>
+  </div>
+<% } %>

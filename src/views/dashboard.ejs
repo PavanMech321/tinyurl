@@ -1,0 +1,92 @@
+<% layout('layout') -%>
+<section class="space-y-6">
+  <div class="bg-white rounded-lg shadow p-4">
+    <h2 class="text-lg font-semibold mb-3">Add new link</h2>
+    <form id="addForm" class="grid gap-3 md:grid-cols-3" method="post" action="/api/links" onsubmit="return handleAdd(event)">
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium mb-1">Target URL</label>
+        <input type="url" name="url" required placeholder="https://example.com/docs"
+          class="w-full border rounded px-3 py-2" />
+        <p id="urlError" class="text-xs text-red-600 mt-1 hidden">Please enter a valid http/https URL.</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Custom code (optional)</label>
+        <input type="text" name="code" placeholder="docs"
+          class="w-full border rounded px-3 py-2" />
+        <p id="codeError" class="text-xs text-red-600 mt-1 hidden">Code must be 3-32 chars: a-z, 0-9, dash.</p>
+      </div>
+      <div class="md:col-span-3 flex items-center gap-2">
+        <button id="submitBtn" type="submit" class="bg-black text-white px-4 py-2 rounded disabled:opacity-50">Shorten</button>
+        <span id="successMsg" class="text-green-700 text-sm hidden">Link created!</span>
+        <span id="errorMsg" class="text-red-700 text-sm hidden"></span>
+      </div>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+      <h2 class="text-lg font-semibold">Links</h2>
+      <form class="flex gap-2" method="get" action="/">
+        <input type="text" name="q" value="<%= q %>" placeholder="Search code or URL..." class="border rounded px-3 py-2 w-64" />
+        <select name="sort" class="border rounded px-3 py-2">
+          <option value="created_at" <%= sort==='created_at'?'selected':'' %>>Created</option>
+          <option value="code" <%= sort==='code'?'selected':'' %>>Code</option>
+          <option value="url" <%= sort==='url'?'selected':'' %>>URL</option>
+          <option value="total_clicks" <%= sort==='total_clicks'?'selected':'' %>>Clicks</option>
+          <option value="last_clicked_at" <%= sort==='last_clicked_at'?'selected':'' %>>Last clicked</option>
+        </select>
+        <select name="dir" class="border rounded px-3 py-2">
+          <option value="asc" <%= dir==='asc'?'selected':'' %>>Asc</option>
+          <option value="desc" <%= dir==='desc'?'selected':'' %>>Desc</option>
+        </select>
+        <button class="bg-gray-800 text-white px-4 py-2 rounded">Apply</button>
+      </form>
+    </div>
+
+    <% if (links.length === 0) { %>
+      <p class="text-sm text-gray-600">No links yet. Add one above.</p>
+    <% } else { %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="text-left border-b">
+              <th class="py-2 px-2">Short code</th>
+              <th class="py-2 px-2">Target URL</th>
+              <th class="py-2 px-2">Total clicks</th>
+              <th class="py-2 px-2">Last clicked</th>
+              <th class="py-2 px-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% links.forEach(l => { %>
+              <tr class="border-b">
+                <td class="py-2 px-2">
+                  <a href="/code/<%= l.code %>" class="text-blue-700 hover:underline"><%= l.code %></a>
+                </td>
+                <td class="py-2 px-2 max-w-[300px]">
+                  <div class="flex items-center gap-2">
+                    <span class="truncate block" title="<%= l.url %>"><%= l.url %></span>
+                    <button class="text-xs text-gray-700 border px-2 py-1 rounded"
+                      onclick="copyText('<%= l.url %>')">Copy</button>
+                  </div>
+                  <div class="text-xs text-gray-500">Short: <span class="underline"><%= (process.env.APP_BASE_URL || '') %>/<%= l.code %></span>
+                    <button class="text-xs text-gray-700 border px-2 py-1 rounded"
+                      onclick="copyText('<%= (process.env.APP_BASE_URL || ) %>/<%= l.code %>')">Copy</button>
+                  </div>
+                </td>
+                <td class="py-2 px-2"><%= l.total_clicks %></td>
+                <td class="py-2 px-2"><%= l.last_clicked_at ? new Date(l.last_clicked_at).toLocaleString() : '—' %></td>
+                <td class="py-2 px-2">
+                  <form onsubmit="return handleDelete(event)" data-code="<%= l.code %>" action="/api/links/<%= l.code %>" method="post">
+                    <input type="hidden" name="_method" value="DELETE" />
+                    <button class="text-xs bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</section>
