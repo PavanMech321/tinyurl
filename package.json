@@ -11,7 +11,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "start": "node dist/server.js",
     "build": "tsc",
-    "migrate": "node ./src/migrations/init.js"
+    "migrate": "node dist/migrate.js"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
